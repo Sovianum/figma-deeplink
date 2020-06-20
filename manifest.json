@@ -1,0 +1,7 @@
+{
+  "name": "Direct Link",
+  "id": "856246737669471011",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
+}

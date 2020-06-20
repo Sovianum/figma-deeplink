@@ -1,0 +1,58 @@
+import {getNodePage} from '../util'
+import {newNodeNotFound, newTypePluginMessage, MessageType} from '../../message/messages'
+import { parseFigmaLink } from './link'
+
+
+export class DeeplinkModel {
+    onLinkRequest(req: string) {
+        const linkInfo = parseFigmaLink(req)
+        if (!linkInfo || !linkInfo.nodeID) {
+            figma.ui.postMessage(newTypePluginMessage(MessageType.NoIDInLink))
+            return
+        }
+
+        return this.navToNode(linkInfo.nodeID)
+    }
+
+    navToNode(id: string) {
+        const srcNode = figma.getNodeById(id)
+        if (!srcNode) {
+            figma.ui.postMessage(newNodeNotFound(id))
+            return
+        }
+
+        let node = null
+        switch (srcNode.type) {
+        case "PAGE":
+            node = srcNode.children[0] as SceneNode
+            break
+
+        case "DOCUMENT":
+        case "BOOLEAN_OPERATION":
+        case "VECTOR":
+            figma.ui.postMessage(newTypePluginMessage(MessageType.UnselectableNode))
+            return
+
+        default:
+            node = srcNode as SceneNode
+        }
+
+        const page = getNodePage(node)
+        
+        if (page !== figma.currentPage) {
+            figma.currentPage = page
+        }
+        
+        try {
+            figma.currentPage.selection = [node]
+            figma.viewport.scrollAndZoomIntoView([node])
+        } catch (e) {
+            console.error(e)
+            figma.ui.postMessage(newTypePluginMessage(MessageType.UnselectableNode))
+        }
+    }
+
+    getCurrentDocumentID(): string {
+        return figma.currentPage.parent.id
+    }
+}
