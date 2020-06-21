@@ -2,8 +2,9 @@ export enum MessageType {
     UIInited = "uiInited",
     LinkRequest = "linkRequest",
     NodeNotFound = "nodeNotFound",
-    NoIDInLink = "noIDInLink",
-    UnselectableNode = "unselectableNode"
+    BadLink = "badLink",
+    UnselectableNode = "unselectableNode",
+    WrongDocument = "wrongDocument"
 }
 
 export function newNodeNotFound(id: string): PluginMessage {
@@ -12,6 +13,18 @@ export function newNodeNotFound(id: string): PluginMessage {
 
 export function newTypePluginMessage(type: MessageType): PluginMessage {
     return new PluginMessage(type, null)
+}
+
+export interface WrongDocumentPayload {
+    linkDocument: string
+    currDocument: string
+}
+
+export function newWrongDocument(linkDocument: string, currDocument: string): PluginMessage {
+    return new PluginMessage(
+        MessageType.WrongDocument,
+        {linkDocument, currDocument} as WrongDocumentPayload
+    )
 }
 
 export class PluginMessage {

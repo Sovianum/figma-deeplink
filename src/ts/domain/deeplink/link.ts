@@ -1,17 +1,27 @@
-import { parse, UrlWithStringQuery } from 'url';
+import { parse } from 'url';
+import * as UrlPattern from 'url-pattern';
 
 export interface FigmaLinkInfo {
+    hostName: string
+    fileName: string
+    fileID: string
     nodeID?: string
 }
 
 interface QueryPair {
     key: string
     value: string
-} 
+}
 
 export function parseFigmaLink(link: string): FigmaLinkInfo {
     const parsed = parse(link)
     if (!parsed.query) {
+        return null
+    }
+
+    const figmaLink = new UrlPattern("/file/:fileID/:fileName(/*)")
+    const matched = figmaLink.match(parsed.pathname)
+    if (!matched) {
         return null
     }
 
@@ -30,6 +40,9 @@ export function parseFigmaLink(link: string): FigmaLinkInfo {
 
     const nodeID = queryMap.get('node-id')
     return {
+        hostName: decodeURIComponent(parsed.hostname),
+        fileName: matched.fileName,
+        fileID: decodeURIComponent(matched.fileID),
         nodeID
     }
 }

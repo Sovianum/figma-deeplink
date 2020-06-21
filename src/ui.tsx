@@ -3,7 +3,7 @@ import './static/ds.min.js'
 import './styles/tabs.scss'
 import './styles/tags.scss'
 import './styles/indexing.scss'
-import {MessageType, PluginMessage } from './ts/message/messages'
+import { MessageType, PluginMessage, WrongDocumentPayload } from './ts/message/messages'
 
 import * as ReactDOM from 'react-dom'
 import * as React from 'react'
@@ -49,12 +49,17 @@ const handleMessage = (msg: PluginMessage) => {
       app.onNodeNotFound(msg.data as string)
       break
 
-    case MessageType.NoIDInLink:
-      app.onNoIDInLink()
+    case MessageType.BadLink:
+      app.onBadLink()
       break
 
     case MessageType.UnselectableNode:
       app.onUnselectableNode()
+      break
+
+    case MessageType.WrongDocument:
+      const data = msg.data as WrongDocumentPayload
+      app.onWrongDocument(data.linkDocument, data.currDocument)
       break
   }
 }

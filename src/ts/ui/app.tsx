@@ -48,11 +48,20 @@ export class App extends React.Component<{}, AppState> {
         })
     }
 
-    onNoIDInLink() {
+    onWrongDocument(linkDocument: string, currDocument: string) {
+        console.log("wrong document")
         this.resetState()
 
         this.setState({
-            alert: "No id present in link"
+            alert: `This link is from \"${linkDocument}\" document; current document is \"${currDocument}\"`
+        })
+    }
+
+    onBadLink() {
+        this.resetState()
+
+        this.setState({
+            alert: "Wrong link format"
         })
     }
 
